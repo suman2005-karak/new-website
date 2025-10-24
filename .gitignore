@@ -33,3 +33,4 @@ Thumbs.db
 coverage/
 *.bak
 *.tmp
+.env 
