@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Wellness & Indian Cultural Color Palette */
+    --background: 45 15% 97%;
+    --foreground: 35 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 35 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 35 30% 15%;
+
+    /* Saffron/Turmeric Primary - Indian Cultural Touch */
+    --primary: 35 85% 55%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 35 75% 65%;
+
+    /* Warm Sage Secondary */
+    --secondary: 85 25% 88%;
+    --secondary-foreground: 35 30% 15%;
+
+    --muted: 85 20% 93%;
+    --muted-foreground: 35 15% 45%;
+
+    /* Terracotta Accent */
+    --accent: 15 65% 70%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Success - Sage Green */
+    --success: 120 35% 50%;
+    --success-foreground: 0 0% 98%;
+
+    --border: 85 25% 88%;
+    --input: 85 25% 88%;
+    --ring: 35 85% 55%;
+
+    --radius: 1rem;
+
+    /* Wellness Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-wellness: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(85 45% 85%) 0%, hsl(120 25% 90%) 100%);
+
+    /* Elevated Shadows */
+    --shadow-card: 0 4px 20px -2px hsl(var(--primary) / 0.08);
+    --shadow-elevated: 0 8px 30px -6px hsl(var(--primary) / 0.15);
+    --shadow-glow: 0 0 30px -8px hsl(var(--primary) / 0.25);
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 35 25% 25%;
+    --sidebar-primary: 35 85% 55%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 85 25% 90%;
+    --sidebar-accent-foreground: 35 30% 15%;
+    --sidebar-border: 85 25% 85%;
+    --sidebar-ring: 35 85% 55%;
+  }
+
+  .dark {
+    --background: 35 25% 8%;
+    --foreground: 45 15% 90%;
+
+    --card: 35 20% 12%;
+    --card-foreground: 45 15% 90%;
+
+    --popover: 35 20% 12%;
+    --popover-foreground: 45 15% 90%;
+
+    --primary: 35 75% 65%;
+    --primary-foreground: 35 25% 8%;
+    --primary-glow: 35 65% 75%;
+
+    --secondary: 35 20% 18%;
+    --secondary-foreground: 45 15% 90%;
+
+    --muted: 35 15% 15%;
+    --muted-foreground: 45 10% 65%;
+
+    --accent: 15 55% 60%;
+    --accent-foreground: 35 25% 8%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 120 40% 55%;
+    --success-foreground: 0 0% 98%;
+
+    --border: 35 20% 18%;
+    --input: 35 20% 18%;
+    --ring: 35 75% 65%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-wellness: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(35 25% 15%) 0%, hsl(85 20% 20%) 100%);
+
+    /* Dark shadows */
+    --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 8px 30px -6px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 30px -8px hsl(var(--primary) / 0.4);
+
+    --sidebar-background: 35 25% 10%;
+    --sidebar-foreground: 45 15% 85%;
+    --sidebar-primary: 35 75% 65%;
+    --sidebar-primary-foreground: 35 25% 8%;
+    --sidebar-accent: 35 20% 15%;
+    --sidebar-accent-foreground: 45 15% 85%;
+    --sidebar-border: 35 20% 15%;
+    --sidebar-ring: 35 75% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+@keyframes lightning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-lightning {
+  animation: lightning 1.5s ease-in-out infinite;
+}
