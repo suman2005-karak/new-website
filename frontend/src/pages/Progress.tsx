@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Scale, Activity, Flame, Heart, TrendingDown, TrendingUp } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
+
 
 export default function Progress() {
   const [user, setUser] = useState<any>(null);
@@ -28,7 +29,7 @@ export default function Progress() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -46,7 +47,7 @@ export default function Progress() {
 
   const fetchProgress = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/progress/${userId}/current`);
+      const res = await fetch(`${API_BASE_URL}/api/progress/${userId}/current`);
       const data = await res.json();
       
       if (data.success) {
