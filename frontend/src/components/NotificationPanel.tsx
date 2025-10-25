@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Bell, Pill, LogIn, Clock, X, CheckCircle, Flame } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
+
 
 interface Notification {
   id: string;
@@ -49,7 +50,7 @@ export default function NotificationPanel({
     if (!userId) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/notifications/${userId}?limit=50`);
+      const res = await fetch(`${API_BASE_URL}/api/notifications/${userId}?limit=50`);
       const data = await res.json();
       
       if (data.success) {
@@ -79,7 +80,7 @@ export default function NotificationPanel({
     if (!userId) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/medicines/schedule/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/medicines/schedule/${userId}`);
       const data = await res.json();
 
       if (data.success) {
@@ -138,7 +139,7 @@ export default function NotificationPanel({
     );
 
     try {
-      await fetch(`${API_URL}/api/notifications/${id}/read`, {
+      await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
         method: 'PATCH'
       });
     } catch (err) {
@@ -152,7 +153,7 @@ export default function NotificationPanel({
     );
 
     try {
-      await fetch(`${API_URL}/api/notifications/${userId}/mark-all-read`, {
+      await fetch(`${API_BASE_URL}/api/notifications/${userId}/mark-all-read`, {
         method: 'PATCH'
       });
     } catch (err) {
@@ -164,7 +165,7 @@ export default function NotificationPanel({
     setNotifications(prev => prev.filter(n => n.id !== id));
 
     try {
-      await fetch(`${API_URL}/api/notifications/${id}`, {
+      await fetch(`${API_BASE_URL}/api/notifications/${id}`, {
         method: 'DELETE'
       });
     } catch (err) {
@@ -177,7 +178,7 @@ export default function NotificationPanel({
     try {
       // Clear each notification individually
       const deletePromises = notifications.map(notification => 
-        fetch(`${API_URL}/api/notifications/${notification.id}`, {
+        fetch(`${API_BASE_URL}/api/notifications/${notification.id}`, {
           method: 'DELETE'
         })
       );
