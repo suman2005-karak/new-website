@@ -9,8 +9,7 @@ import { exerciseRoutines, meditationSessions } from '@/lib/data';
 import ExerciseDetailCard from '@/components/ExerciseDetailCard';
 import { useToast } from '@/hooks/use-toast';
 import MeditationTimer from '@/components/MeditationTimer';
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
 
 export default function ExerciseMeditation() {
   const [activeTab, setActiveTab] = useState('exercise');
@@ -26,7 +25,6 @@ export default function ExerciseMeditation() {
   const [statsLoading, setStatsLoading] = useState(true);
   const [userLoading, setUserLoading] = useState(true);
   const { toast } = useToast();
-  
 
   // ✅ FETCH USER FROM DATABASE ON MOUNT
   useEffect(() => {
@@ -59,7 +57,7 @@ export default function ExerciseMeditation() {
       }
 
       console.log("Fetching user from database...");
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -93,7 +91,7 @@ export default function ExerciseMeditation() {
     setStatsLoading(true);
     try {
       console.log("Fetching weekly stats for user:", userId);
-      const res = await fetch(`${API_URL}/api/exercise/weekly-stats/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/exercise/weekly-stats/${userId}`);
       const data = await res.json();
       
       console.log("Weekly stats response:", data);
@@ -143,7 +141,7 @@ export default function ExerciseMeditation() {
 
       console.log("Request data:", requestData);
 
-      const res = await fetch(`${API_URL}/api/exercise/complete`, {
+      const res = await fetch(`${API_BASE_URL}/api/exercise/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData)
@@ -468,32 +466,31 @@ export default function ExerciseMeditation() {
         </TabsContent>
         
         <TabsContent value="meditation" className="space-y-6">
-  {/* Guided Sessions */}
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4, delay: 0.2 }}
-  >
-    <div className="flex items-center gap-2 mb-6">
-      <Heart className="h-5 w-5" />
-      <h2 className="text-xl font-semibold">Guided Sessions</h2>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {meditationSessions.map(renderMeditationCard)}
-    </div>
-  </motion.div>
+          {/* Guided Sessions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <div className="flex items-center gap-2 mb-6">
+              <Heart className="h-5 w-5" />
+              <h2 className="text-xl font-semibold">Guided Sessions</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {meditationSessions.map(renderMeditationCard)}
+            </div>
+          </motion.div>
 
-  {/* Functional Meditation Timer */}
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4, delay: 0.3 }}
-  >
-    <MeditationTimer userId={userId} />
-  </motion.div>
-</TabsContent>
-
+          {/* Functional Meditation Timer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <MeditationTimer userId={userId} />
+          </motion.div>
+        </TabsContent>
       </Tabs>
     </div>
   );
