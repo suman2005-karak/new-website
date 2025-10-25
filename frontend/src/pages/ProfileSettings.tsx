@@ -27,6 +27,8 @@ import { useAppStore } from '@/lib/store';
 import { useTheme } from 'next-themes';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '@/lib/config';
+
 
 export default function ProfileSettings() {
   const { user, updateUser, logout } = useAppStore();
@@ -106,10 +108,10 @@ export default function ProfileSettings() {
             throw new Error('No user ID found');
           }
 
-          console.log('📸 Uploading to:', `http://localhost:5000/api/user/${userId}/avatar`);
+          console.log('📸 Uploading to:', `${API_BASE_URL}/api/user/${userId}/avatar`);
 
           // Upload to backend
-          const response = await fetch(`http://localhost:5000/api/user/${userId}/avatar`, {
+          const response = await fetch(`${API_BASE_URL}/api/user/${userId}/avatar`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
@@ -180,7 +182,7 @@ export default function ProfileSettings() {
     setIsSavingProfile(true);
     
     try {
-      const response = await fetch(`http://localhost:5000/api/user/${user?.id}`, {
+     const response = await fetch(`${API_BASE_URL}/api/user/${user?.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
