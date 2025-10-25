@@ -2362,7 +2362,10 @@ app.patch('/api/user/:userId', async (req, res) => {
 app.use(cors({
   origin: [
     'http://localhost:5173', // Local dev
-    'https://frontend-for-wellnesshub.onrender.com' // Deployed frontend
+    'https://frontend-for-wellnesshub.onrender.com',
+     'http://localhost:5000',              // Local backend
+    'https://wellnesshub4us.onrender.com', // Your deployed backend
+  
   ],
   credentials: true
 }));
