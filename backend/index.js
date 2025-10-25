@@ -2357,6 +2357,15 @@ app.patch('/api/user/:userId', async (req, res) => {
     });
   }
 });
+const cors = require('cors');
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // Local dev
+    'https://your-frontend.onrender.com' // Deployed frontend
+  ],
+  credentials: true
+}));
 
 
 
