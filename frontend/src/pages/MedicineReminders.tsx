@@ -1,331 +1,3 @@
-// import { useState } from 'react';
-// import { motion } from 'framer-motion';
-// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
-// import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label';
-// import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// import { Plus, Clock, Pill, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
-// import { useAppStore } from '@/lib/store';
-// import { toast } from '@/hooks/use-toast';
-
-// export default function MedicineReminders() {
-//   const { medicines, addMedicine, markMedicineTaken } = useAppStore();
-//   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-//   const [newMedicine, setNewMedicine] = useState({
-//     name: '',
-//     dosage: '',
-//     frequency: 1,
-//     times: [''],
-//     duration: 7,
-//     startDate: new Date(),
-//   });
-
-//   // Sample medicines if store is empty
-//   const sampleMedicines = medicines.length === 0 ? [
-//     {
-//       id: '1',
-//       name: 'Vitamin D3',
-//       dosage: '1000 IU',
-//       frequency: 1,
-//       times: ['09:00'],
-//       duration: 30,
-//       startDate: new Date(),
-//       taken: { [new Date().toDateString()]: false }
-//     },
-//     {
-//       id: '2',
-//       name: 'Omega-3',
-//       dosage: '500mg',
-//       frequency: 2,
-//       times: ['08:00', '20:00'],
-//       duration: 60,
-//       startDate: new Date(),
-//       taken: { [new Date().toDateString()]: true }
-//     },
-//     {
-//       id: '3',
-//       name: 'Multivitamin',
-//       dosage: '1 tablet',
-//       frequency: 1,
-//       times: ['07:30'],
-//       duration: 90,
-//       startDate: new Date(),
-//       taken: { [new Date().toDateString()]: false }
-//     }
-//   ] : medicines;
-
-//   const handleAddMedicine = () => {
-//     if (!newMedicine.name || !newMedicine.dosage) {
-//       toast({
-//         title: "Error",
-//         description: "Please fill in all required fields",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     addMedicine({
-//       ...newMedicine,
-//       taken: {}
-//     });
-//     toast({
-//       title: "Medicine Added",
-//       description: `${newMedicine.name} has been added to your reminders`,
-//     });
-    
-//     setNewMedicine({
-//       name: '',
-//       dosage: '',
-//       frequency: 1,
-//       times: [''],
-//       duration: 7,
-//       startDate: new Date(),
-//     });
-//     setIsAddDialogOpen(false);
-//   };
-
-//   const toggleMedicineTaken = (medicineId: string) => {
-//     const today = new Date().toDateString();
-//     const medicine = sampleMedicines.find(m => m.id === medicineId);
-//     const currentStatus = medicine?.taken[today] || false;
-    
-//     markMedicineTaken(medicineId, today, !currentStatus);
-    
-//     toast({
-//       title: currentStatus ? "Marked as Not Taken" : "Marked as Taken",
-//       description: `${medicine?.name} updated for today`,
-//     });
-//   };
-
-//   const todaysMedicines = sampleMedicines.filter(med => {
-//     const today = new Date();
-//     const startDate = new Date(med.startDate);
-//     const daysDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-//     return daysDiff >= 0 && daysDiff < med.duration;
-//   });
-
-//   const adherenceRate = todaysMedicines.length > 0 
-//     ? (todaysMedicines.filter(med => med.taken[new Date().toDateString()]).length / todaysMedicines.length) * 100
-//     : 0;
-
-//   return (
-//     <div className="space-y-6">
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.4 }}
-//       >
-//         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-//           <div>
-//             <h1 className="text-3xl font-bold">Medicine Reminders</h1>
-//             <p className="text-muted-foreground">Keep track of your medications</p>
-//           </div>
-//           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-//             <DialogTrigger asChild>
-//               <Button>
-//                 <Plus className="h-4 w-4 mr-2" />
-//                 Add Medicine
-//               </Button>
-//             </DialogTrigger>
-//             <DialogContent>
-//               <DialogHeader>
-//                 <DialogTitle>Add New Medicine</DialogTitle>
-//               </DialogHeader>
-//               <div className="space-y-4">
-//                 <div className="grid grid-cols-2 gap-4">
-//                   <div className="space-y-2">
-//                     <Label htmlFor="medicine-name">Medicine Name</Label>
-//                     <Input
-//                       id="medicine-name"
-//                       placeholder="e.g., Vitamin D3"
-//                       value={newMedicine.name}
-//                       onChange={(e) => setNewMedicine({ ...newMedicine, name: e.target.value })}
-//                     />
-//                   </div>
-//                   <div className="space-y-2">
-//                     <Label htmlFor="dosage">Dosage</Label>
-//                     <Input
-//                       id="dosage"
-//                       placeholder="e.g., 500mg"
-//                       value={newMedicine.dosage}
-//                       onChange={(e) => setNewMedicine({ ...newMedicine, dosage: e.target.value })}
-//                     />
-//                   </div>
-//                 </div>
-                
-//                 <div className="grid grid-cols-2 gap-4">
-//                   <div className="space-y-2">
-//                     <Label>Frequency (times per day)</Label>
-//                     <Select 
-//                       value={newMedicine.frequency.toString()} 
-//                       onValueChange={(value) => setNewMedicine({ ...newMedicine, frequency: parseInt(value) })}
-//                     >
-//                       <SelectTrigger>
-//                         <SelectValue />
-//                       </SelectTrigger>
-//                       <SelectContent>
-//                         <SelectItem value="1">Once daily</SelectItem>
-//                         <SelectItem value="2">Twice daily</SelectItem>
-//                         <SelectItem value="3">Three times daily</SelectItem>
-//                         <SelectItem value="4">Four times daily</SelectItem>
-//                       </SelectContent>
-//                     </Select>
-//                   </div>
-                  
-//                   <div className="space-y-2">
-//                     <Label htmlFor="duration">Duration (days)</Label>
-//                     <Input
-//                       id="duration"
-//                       type="number"
-//                       value={newMedicine.duration}
-//                       onChange={(e) => setNewMedicine({ ...newMedicine, duration: parseInt(e.target.value) })}
-//                     />
-//                   </div>
-//                 </div>
-                
-//                 <Button onClick={handleAddMedicine} className="w-full">
-//                   Add Medicine
-//                 </Button>
-//               </div>
-//             </DialogContent>
-//           </Dialog>
-//         </div>
-//       </motion.div>
-
-//       {/* Today's Overview */}
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.4, delay: 0.1 }}
-//         className="grid grid-cols-1 md:grid-cols-3 gap-6"
-//       >
-//         <Card className="shadow-card">
-//           <CardHeader className="pb-2">
-//             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//               <Pill className="h-4 w-4" />
-//               Today's Medicines
-//             </CardTitle>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold text-primary">{todaysMedicines.length}</div>
-//             <div className="text-xs text-muted-foreground">Scheduled for today</div>
-//           </CardContent>
-//         </Card>
-
-//         <Card className="shadow-card">
-//           <CardHeader className="pb-2">
-//             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//               <CheckCircle className="h-4 w-4" />
-//               Adherence Rate
-//             </CardTitle>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold text-primary">{Math.round(adherenceRate)}%</div>
-//             <div className="text-xs text-muted-foreground">This week</div>
-//           </CardContent>
-//         </Card>
-
-//         <Card className="shadow-card">
-//           <CardHeader className="pb-2">
-//             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-//               <AlertCircle className="h-4 w-4" />
-//               Next Dose
-//             </CardTitle>
-//           </CardHeader>
-//           <CardContent>
-//             <div className="text-2xl font-bold text-primary">2:00 PM</div>
-//             <div className="text-xs text-muted-foreground">Omega-3 500mg</div>
-//           </CardContent>
-//         </Card>
-//       </motion.div>
-
-//       {/* Today's Schedule */}
-//       <motion.div
-//         initial={{ opacity: 0, y: 20 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.4, delay: 0.2 }}
-//       >
-//         <Card className="shadow-elevated">
-//           <CardHeader>
-//             <CardTitle className="flex items-center gap-2">
-//               <Calendar className="h-5 w-5" />
-//               Today's Medicine Schedule
-//             </CardTitle>
-//           </CardHeader>
-//           <CardContent className="space-y-4">
-//             {todaysMedicines.map((medicine) => (
-//               <div
-//                 key={medicine.id}
-//                 className={`p-4 rounded-lg border transition-all ${
-//                   medicine.taken[new Date().toDateString()]
-//                     ? 'bg-success/10 border-success/50'
-//                     : 'bg-muted/50 border-border'
-//                 }`}
-//               >
-//                 <div className="flex items-center justify-between">
-//                   <div className="flex-1">
-//                     <div className="flex items-center gap-3 mb-2">
-//                       <div className="p-2 rounded-full bg-primary/10">
-//                         <Pill className="h-4 w-4 text-primary" />
-//                       </div>
-//                       <div>
-//                         <h3 className="font-medium">{medicine.name}</h3>
-//                         <p className="text-sm text-muted-foreground">{medicine.dosage}</p>
-//                       </div>
-//                     </div>
-                    
-//                     <div className="flex items-center gap-4">
-//                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-//                         <Clock className="h-3 w-3" />
-//                         {medicine.times.join(', ')}
-//                       </div>
-//                       <Badge variant={
-//                         medicine.taken[new Date().toDateString()] ? 'default' : 'secondary'
-//                       }>
-//                         {medicine.taken[new Date().toDateString()] ? 'Taken' : 'Pending'}
-//                       </Badge>
-//                     </div>
-//                   </div>
-                  
-//                   <Button
-//                     variant={medicine.taken[new Date().toDateString()] ? 'outline' : 'default'}
-//                     size="sm"
-//                     onClick={() => toggleMedicineTaken(medicine.id)}
-//                   >
-//                     {medicine.taken[new Date().toDateString()] ? (
-//                       <>
-//                         <CheckCircle className="h-4 w-4 mr-2" />
-//                         Taken
-//                       </>
-//                     ) : (
-//                       <>
-//                         <Clock className="h-4 w-4 mr-2" />
-//                         Mark Taken
-//                       </>
-//                     )}
-//                   </Button>
-//                 </div>
-//               </div>
-//             ))}
-            
-//             {todaysMedicines.length === 0 && (
-//               <div className="text-center py-8">
-//                 <Pill className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-//                 <h3 className="text-lg font-medium mb-2">No medicines scheduled</h3>
-//                 <p className="text-muted-foreground">
-//                   Add your first medicine to start tracking
-//                 </p>
-//               </div>
-//             )}
-//           </CardContent>
-//         </Card>
-//       </motion.div>
-//     </div>
-//   );
-// }
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -336,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Clock, Pill, CheckCircle, AlertCircle, Calendar, TrendingUp } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
 
 interface MedicineLog {
   _id: string;
@@ -403,7 +74,7 @@ export default function MedicineReminders() {
       }
 
       console.log("Fetching user from database...");
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -444,7 +115,7 @@ export default function MedicineReminders() {
 
   const fetchSchedule = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/medicines/schedule/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/medicines/schedule/${userId}`);
       const data = await res.json();
       
       if (data.success) {
@@ -458,7 +129,7 @@ export default function MedicineReminders() {
 
   const fetchAdherence = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/medicines/adherence/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/medicines/adherence/${userId}`);
       const data = await res.json();
       
       if (data.success) {
@@ -471,7 +142,7 @@ export default function MedicineReminders() {
 
   const fetchNextDose = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/medicines/next-dose/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/medicines/next-dose/${userId}`);
       const data = await res.json();
       
       if (data.success) {
@@ -493,7 +164,7 @@ export default function MedicineReminders() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/medicines`, {
+      const res = await fetch(`${API_BASE_URL}/api/medicines`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -537,7 +208,7 @@ export default function MedicineReminders() {
 
   const handleMarkTaken = async (logId: string, medicineName: string) => {
     try {
-      const res = await fetch(`${API_URL}/api/medicines/take`, {
+      const res = await fetch(`${API_BASE_URL}/api/medicines/take`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ logId })
