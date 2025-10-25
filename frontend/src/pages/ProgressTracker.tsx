@@ -18,7 +18,8 @@ import {
   Footprints
 } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
+
 
 export default function ProgressTracker() {
   const [user, setUser] = useState<any>(null);
@@ -71,7 +72,7 @@ useEffect(() => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -89,7 +90,7 @@ useEffect(() => {
 
   const fetchProgress = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/progress/${userId}/current`);
+      const res = await fetch(`${API_BASE_URL}/api/progress/${userId}/current`);
       const data = await res.json();
       
       if (data.success) {
@@ -109,7 +110,7 @@ useEffect(() => {
   try {
     console.log("📊 Fetching weight history...");
     
-    const res = await fetch(`${API_URL}/api/progress/${userId}/history?days=90`);
+    const res = await fetch(`${API_BASE_URL}/api/progress/${userId}/history?days=90`);
     const data = await res.json();
     
     console.log("📊 Raw weight data:", data);
@@ -193,7 +194,7 @@ const fetchActivityHistory = async () => {
   try {
     console.log("📊 Fetching activity history...");
     
-    const res = await fetch(`${API_URL}/api/exercise/history/${userId}?limit=30`);
+    const res = await fetch(`${API_BASE_URL}/api/exercise/history/${userId}?limit=30`);
     const data = await res.json();
     
     console.log("📊 Raw data:", data);
