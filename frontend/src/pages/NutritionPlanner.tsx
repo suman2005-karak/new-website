@@ -10,7 +10,7 @@ import { generatePersonalizedPlan } from '@/lib/nutritionPlanGenerator';
 import { toast } from '@/hooks/use-toast';
 import AddFoodDialog from '@/components/AddFoodDialog';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_BASE_URL } from '@/lib/config';
 
 // ✅ Meal time helper function
 const getMealTimeInfo = (mealType: string) => {
@@ -84,7 +84,7 @@ export default function NutritionPlanner() {
         return;
       }
 
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -111,7 +111,7 @@ export default function NutritionPlanner() {
     try {
       console.log("📊 Fetching today's nutrition plan...");
       
-      const res = await fetch(`${API_URL}/api/nutrition/plan/${userId}/${today}`);
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/plan/${userId}/${today}`);
       const data = await res.json();
       
       if (data.success && data.plan) {
@@ -131,7 +131,7 @@ export default function NutritionPlanner() {
     if (!personalizedPlan || !userId) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/nutrition/plan`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -164,7 +164,7 @@ export default function NutritionPlanner() {
     if (!user || !personalizedPlan || !userId) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/nutrition/plan`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -195,7 +195,7 @@ export default function NutritionPlanner() {
       const updatedMeals = { ...todaysPlan.meals };
       updatedMeals[mealType] = [...updatedMeals[mealType], food];
       
-      const res = await fetch(`${API_URL}/api/nutrition/plan`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -226,7 +226,7 @@ export default function NutritionPlanner() {
       const updatedMeals = { ...todaysPlan.meals };
       updatedMeals[mealType] = updatedMeals[mealType].filter((f: any) => f._id !== foodId);
       
-      const res = await fetch(`${API_URL}/api/nutrition/plan`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/plan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -259,7 +259,7 @@ export default function NutritionPlanner() {
     const isConsumed = food.consumed;
     
     try {
-      const res = await fetch(`${API_URL}/api/nutrition/consumed`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/consumed`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -288,7 +288,7 @@ export default function NutritionPlanner() {
     if (!userId) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/nutrition/water`, {
+      const res = await fetch(`${API_BASE_URL}/api/nutrition/water`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
