@@ -1,3 +1,4 @@
+
 // import { useState } from 'react';
 // import { motion } from 'framer-motion';
 // import { Button } from '@/components/ui/button';
@@ -53,6 +54,14 @@
 //         console.log("✅ Token saved:", data.token);
 //       }
       
+//       // ✅ SAVE LOGIN NOTIFICATION
+//       localStorage.setItem('lastLogin', JSON.stringify({
+//         timestamp: new Date().toISOString(),
+//         email: data.user.email,
+//         method: 'email'
+//       }));
+//       console.log("✅ Login notification saved");
+      
 //       login(data.user);
 //       toast({ title: 'Welcome back!', description: data.user.name });
 //     } catch (err: any) {
@@ -79,6 +88,14 @@
 //         localStorage.setItem('token', data.token);
 //         console.log("✅ Token saved:", data.token);
 //       }
+      
+//       // ✅ SAVE LOGIN NOTIFICATION
+//       localStorage.setItem('lastLogin', JSON.stringify({
+//         timestamp: new Date().toISOString(),
+//         email: data.user.email,
+//         method: 'signup'
+//       }));
+//       console.log("✅ Signup notification saved");
       
 //       login(data.user);
 //       toast({ title: 'Account created!', description: data.user.name });
@@ -160,13 +177,21 @@
 //                           return;
 //                         }
                         
-//                         // ✅✅✅ THIS IS THE KEY FIX - SAVE TOKEN TO LOCALSTORAGE ✅✅✅
+//                         // ✅ SAVE TOKEN TO LOCALSTORAGE
 //                         if (data.token) {
 //                           localStorage.setItem('token', data.token);
 //                           console.log("✅ Token saved to localStorage:", data.token);
 //                         } else {
 //                           console.error("❌ No token in response!");
 //                         }
+                        
+//                         // ✅ SAVE LOGIN NOTIFICATION
+//                         localStorage.setItem('lastLogin', JSON.stringify({
+//                           timestamp: new Date().toISOString(),
+//                           email: data.user.email,
+//                           method: 'google'
+//                         }));
+//                         console.log("✅ Login notification saved");
                         
 //                         // Save user to store
 //                         login(data.user);
@@ -355,7 +380,8 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState('login');
   const login = useAppStore((state) => state.login);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // ✅ UPDATED: Use correct environment variable name
+  const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
   const [loginForm, setLoginForm] = useState({
     email: '',
@@ -700,4 +726,5 @@ export default function AuthPage() {
     </div>
   );
 }
+
 
