@@ -21,7 +21,7 @@ for (const k of REQUIRED_ENVS) {
   }
 }
 
-const app = express();
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '50mb' }));  // ✅ ADD LIMIT
 app.use(express.urlencoded({ limit: '50mb', extended: true }));  // ✅ ADD THIS TOO
@@ -1869,36 +1869,52 @@ app.delete("/api/nutrition/plan/:planId", async (req, res) => {
 
 // ✅ MEAL TIME NOTIFICATIONS
 // Schedule notifications for meal times
+// 🍳 BREAKFAST - 7:00 AM IST
 cron.schedule('0 7 * * *', async () => {
-  // 7:00 AM - Breakfast time
   console.log('🍳 Breakfast time notification trigger');
   await sendMealNotifications('breakfast', 'Breakfast Time! 🍳', 'Ready to start your day with a healthy breakfast?');
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 });
 
+// 🍛 LUNCH - 12:30 PM IST
 cron.schedule('30 12 * * *', async () => {
-  // 12:30 PM - Lunch time
   console.log('🍛 Lunch time notification trigger');
   await sendMealNotifications('lunch', 'Lunch Time! 🍛', 'Time to refuel with a nutritious lunch!');
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 });
 
+// 🍽️ DINNER - 7:00 PM IST
 cron.schedule('0 19 * * *', async () => {
-  // 7:00 PM - Dinner time
   console.log('🍽️ Dinner time notification trigger');
   await sendMealNotifications('dinner', 'Dinner Time! 🍽️', 'End your day with a healthy dinner!');
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 });
 
+// 🍎 SNACKS - 4:00 PM IST
 cron.schedule('0 16 * * *', async () => {
-  // 4:00 PM - Snack time
   console.log('🍎 Snack time notification trigger');
   await sendMealNotifications('snacks', 'Snack Time! 🍎', 'Grab a healthy snack to keep your energy up!');
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
 });
 
+// Updated sendMealNotifications function (keep as is)
 async function sendMealNotifications(mealType, title, message) {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // ... rest of your function code
+
 
 
 
@@ -2359,30 +2375,33 @@ app.patch('/api/user/:userId', async (req, res) => {
 });
 
 
+// app.use(cors({
+//   origin: [
+//     'http://localhost:5173', // Local dev
+//     'https://frontend-for-wellnesshub.onrender.com',
+//      'http://localhost:5000',              // Local backend
+//     'https://wellnesshub4us.onrender.com', // Your deployed backend
+  
+//   ],
+//   credentials: true
+// }));
+
+
+// CORS configuration for production
+const app = express();
+
+// CORS configuration (update with your actual frontend URL)
 app.use(cors({
   origin: [
-    'http://localhost:5173', // Local dev
-    'https://frontend-for-wellnesshub.onrender.com',
-     'http://localhost:5000',              // Local backend
-    'https://wellnesshub4us.onrender.com', // Your deployed backend
-  
+    'http://localhost:5173',           // Local dev
+    'https://frontend-for-wellnesshub.onrender.com',  // Your deployed frontend
+    'https://wellnesshub4us.onrender.com'  // Backend
   ],
   credentials: true
 }));
-const express = require('express');
-const cors = require('cors');
 
-const app = express();
-
-// CORS configuration for production
-const corsOptions = {
-  origin: ['https://your-frontend-app.onrender.com', 'http://localhost:5173'],
-  optionsSuccessStatus: 200,
-  credentials: true
-};
-
-app.use(cors(corsOptions));
-
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 // ============================================
