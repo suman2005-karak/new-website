@@ -2369,6 +2369,19 @@ app.use(cors({
   ],
   credentials: true
 }));
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+// CORS configuration for production
+const corsOptions = {
+  origin: ['https://your-frontend-app.onrender.com', 'http://localhost:5173'],
+  optionsSuccessStatus: 200,
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 
 
