@@ -109,7 +109,7 @@ export function AppHeader() {
     }
   };
          const handleSettingsClick = () => {
-    navigate('/profile/settings'); // Navigate to settings page
+    navigate('/profile'); // Navigate to settings page
   };
 
   // ✅ NEW: Callback to update unread count from NotificationPanel
