@@ -611,7 +611,6 @@
 //     </div>
 //   );
 // }
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -640,7 +639,263 @@ export default function ProgressTracker() {
   const [activityHistory, setActivityHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ... (keep all your useEffect hooks and fetch functions the same) ...
+  // Fetch user on mount
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  // Auto-refresh weight data every hour
+  useEffect(() => {
+    if (userId) {
+      const interval = setInterval(() => {
+        console.log("🔄 Auto-refreshing weight data...");
+        fetchWeightHistory();
+      }, 60 * 60 * 1000); // 1 hour
+      
+      return () => clearInterval(interval);
+    }
+  }, [userId, user]);
+
+  // Fetch progress data when user is loaded
+  useEffect(() => {
+    if (userId) {
+      fetchProgress();
+      fetchWeightHistory();
+      fetchActivityHistory();
+    }
+  }, [userId]);
+
+  // Auto-refresh activity data every hour
+  useEffect(() => {
+    if (userId) {
+      const interval = setInterval(() => {
+        console.log("🔄 Auto-refreshing activity data...");
+        fetchActivityHistory();
+      }, 60 * 60 * 1000); // 1 hour
+      
+      return () => clearInterval(interval);
+    }
+  }, [userId]);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const res = await fetch(`${API_BASE_URL}/api/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (data.success && data.user) {
+        setUser(data.user);
+        setUserId(data.user.id || data.user._id);
+      }
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProgress = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/progress/${userId}/current`);
+      const data = await res.json();
+      
+      if (data.success) {
+        setProgress(data.progress);
+      }
+    } catch (err) {
+      console.error("Error fetching progress:", err);
+    }
+  };
+
+  const fetchWeightHistory = async () => {
+    if (!userId) {
+      console.log("❌ No userId");
+      return;
+    }
+
+    try {
+      console.log("📊 Fetching weight history...");
+      
+      const res = await fetch(`${API_BASE_URL}/api/progress/${userId}/history?days=90`);
+      const data = await res.json();
+      
+      console.log("📊 Raw weight data:", data);
+      
+      if (data.success && data.history) {
+        // Group by date
+        const dateMap: { [key: string]: { weight: number; bmi: number } } = {};
+        
+        data.history.forEach((entry: any) => {
+          const dateKey = new Date(entry.date).toISOString().split('T')[0];
+          dateMap[dateKey] = {
+            weight: entry.weight,
+            bmi: entry.bmi || 0
+          };
+        });
+
+        // Generate last 30 days up to TODAY
+        const today = new Date();
+        const N_DAYS = 30;
+        const days = [];
+        
+        let lastKnownWeight = user?.weight || 0;
+        let lastKnownBMI = 0;
+        
+        for (let i = N_DAYS - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const dateKey = d.toISOString().split('T')[0];
+          const displayDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          
+          if (dateMap[dateKey]) {
+            lastKnownWeight = dateMap[dateKey].weight;
+            lastKnownBMI = dateMap[dateKey].bmi;
+          }
+          
+          days.push({
+            date: displayDate,
+            weight: lastKnownWeight,
+            bmi: lastKnownBMI
+          });
+        }
+        
+        console.log("📊 Formatted weight chart:", days);
+        setWeightHistory(days);
+      } else {
+        console.log("❌ No weight history data");
+        const today = new Date();
+        const N_DAYS = 30;
+        const days = [];
+        const currentWeight = user?.weight || 0;
+        
+        for (let i = N_DAYS - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const displayDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          days.push({
+            date: displayDate,
+            weight: currentWeight,
+            bmi: 0
+          });
+        }
+        
+        setWeightHistory(days);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching weight history:", err);
+      setWeightHistory([]);
+    }
+  };
+
+  const fetchActivityHistory = async () => {
+    if (!userId) {
+      console.log("❌ No userId");
+      return;
+    }
+
+    try {
+      console.log("📊 Fetching activity history...");
+      
+      const res = await fetch(`${API_BASE_URL}/api/exercise/history/${userId}?limit=30`);
+      const data = await res.json();
+      
+      console.log("📊 Raw data:", data);
+      
+      if (data.success && data.history) {
+        const dateMap: { [key: string]: number } = {};
+        
+        data.history.forEach((activity: any) => {
+          const dateKey = new Date(activity.completedAt).toISOString().split('T')[0];
+          dateMap[dateKey] = (dateMap[dateKey] || 0) + (activity.caloriesBurned || 0);
+        });
+
+        const today = new Date();
+        const N_DAYS = 14;
+        const days = [];
+        
+        for (let i = N_DAYS - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const dateKey = d.toISOString().split('T')[0];
+          const displayDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          
+          days.push({
+            date: displayDate,
+            calories: dateMap[dateKey] || 0
+          });
+        }
+        
+        console.log("📊 Formatted for chart:", days);
+        setActivityHistory(days);
+      } else {
+        console.log("❌ No history data");
+        const today = new Date();
+        const N_DAYS = 14;
+        const days = [];
+        
+        for (let i = N_DAYS - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const displayDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          days.push({
+            date: displayDate,
+            calories: 0
+          });
+        }
+        
+        setActivityHistory(days);
+      }
+    } catch (err) {
+      console.error("❌ Error fetching activity:", err);
+      setActivityHistory([]);
+    }
+  };
+
+  const adherenceData = [
+    { name: 'Exercise', value: progress?.exerciseAdherence || 85, color: '#f97316' },
+    { name: 'Nutrition', value: 78, color: '#10b981' },
+    { name: 'Medicine', value: progress?.adherenceRate || 92, color: '#6366f1' },
+    { name: 'Sleep', value: 71, color: '#f59e0b' },
+  ];
+
+  const achievements = [
+    {
+      id: 1,
+      title: '7-Day Streak',
+      description: 'Completed workout routine for 7 consecutive days',
+      icon: Award,
+      color: 'text-primary',
+      unlocked: (progress?.workoutsCompleted || 0) >= 7,
+    },
+    {
+      id: 2,
+      title: 'Weight Goal',
+      description: 'Lost 2kg this month',
+      icon: Target,
+      color: 'text-success',
+      unlocked: parseFloat(progress?.weightChange || 0) <= -2,
+    },
+    {
+      id: 3,
+      title: '10K Steps',
+      description: 'Walked 10,000 steps in a single day',
+      icon: Footprints,
+      color: 'text-accent',
+      unlocked: (progress?.dailySteps || 0) >= 10000,
+    },
+    {
+      id: 4,
+      title: 'Medicine Adherence',
+      description: '90%+ medicine adherence',
+      icon: Heart,
+      color: 'text-muted-foreground',
+      unlocked: (progress?.adherenceRate || 0) >= 90,
+    },
+  ];
 
   if (loading) {
     return (
@@ -670,7 +925,7 @@ export default function ProgressTracker() {
         </div>
       </motion.div>
 
-      {/* Key Metrics - Mobile Optimized */}
+      {/* Key Metrics */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -760,24 +1015,24 @@ export default function ProgressTracker() {
         </Card>
       </motion.div>
 
-      {/* Tabs - Mobile Optimized */}
+      {/* Tabs */}
       <Tabs defaultValue="weight" className="space-y-4 sm:space-y-6">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 p-1">
-          <TabsTrigger value="weight" className="text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="weight" className="text-xs sm:text-sm py-2">
             <Scale className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden sm:inline">Weight & BMI</span>
             <span className="sm:hidden">Weight</span>
           </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="activity" className="text-xs sm:text-sm py-2">
             <Activity className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             <span>Activity</span>
           </TabsTrigger>
-          <TabsTrigger value="adherence" className="text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="adherence" className="text-xs sm:text-sm py-2">
             <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden sm:inline">Adherence</span>
             <span className="sm:hidden">Track</span>
           </TabsTrigger>
-          <TabsTrigger value="achievements" className="text-xs sm:text-sm py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="achievements" className="text-xs sm:text-sm py-2">
             <Award className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             <span className="hidden sm:inline">Achievements</span>
             <span className="sm:hidden">Awards</span>
@@ -998,4 +1253,3 @@ export default function ProgressTracker() {
     </div>
   );
 }
-
