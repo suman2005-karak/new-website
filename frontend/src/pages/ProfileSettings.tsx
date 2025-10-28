@@ -265,12 +265,28 @@ export default function ProfileSettings() {
       </motion.div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="health">Health Goals</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-        </TabsList>
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 p-1">
+    <TabsTrigger value="profile" className="text-xs sm:text-sm py-2">
+      <User className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+      <span className="hidden sm:inline">Profile</span>
+      <span className="sm:hidden">Info</span>
+    </TabsTrigger>
+    <TabsTrigger value="health" className="text-xs sm:text-sm py-2">
+      <Target className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+      <span className="hidden sm:inline">Health Goals</span>
+      <span className="sm:hidden">Goals</span>
+    </TabsTrigger>
+    <TabsTrigger value="notifications" className="text-xs sm:text-sm py-2">
+      <Bell className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+      <span className="hidden sm:inline">Notifications</span>
+      <span className="sm:hidden">Alerts</span>
+    </TabsTrigger>
+    <TabsTrigger value="preferences" className="text-xs sm:text-sm py-2">
+      <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+      <span className="hidden sm:inline">Preferences</span>
+      <span className="sm:hidden">Settings</span>
+    </TabsTrigger>
+  </TabsList>
 
         {/* ==================== PROFILE TAB ==================== */}
         <TabsContent value="profile">
